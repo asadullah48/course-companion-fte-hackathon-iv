@@ -1,0 +1,21 @@
+[project]
+name = "course-companion-backend"
+version = "1.0.0"
+description = "AI Agent Development Course - Zero-Backend-LLM Architecture"
+requires-python = ">=3.11"
+authors = [
+    {name = "Asadullah", email = "asadullah@example.com"}
+]
+
+[tool.black]
+line-length = 88
+target-version = ['py311']
+
+[tool.ruff]
+line-length = 88
+select = ["E", "F", "I", "N", "W"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
