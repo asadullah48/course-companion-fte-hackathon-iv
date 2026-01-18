@@ -1,0 +1,116 @@
+# =============================================================================
+# .claudeignore - Prevent Claude Code from wasting tokens on irrelevant files
+# Course Companion FTE - Hackathon IV
+# =============================================================================
+
+# ==================== PYTHON CRITICAL ====================
+# Virtual environments (BIGGEST token waster)
+**/.venv/
+**/venv/
+**/env/
+**/.virtualenv/
+
+# Python cache and compiled files
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+.Python
+
+# Testing artifacts
+**/.pytest_cache/
+**/.coverage
+**/htmlcov/
+**/.tox/
+**/.nox/
+
+# ==================== NODE/JS (for future frontend) ====================
+**/node_modules/
+**/dist/
+**/build/
+**/.next/
+**/.nuxt/
+**/out/
+**/.vercel/
+
+# ==================== DATABASE & DATA ====================
+# SQLite databases
+**/*.db
+**/*.sqlite
+**/*.sqlite3
+
+# Database dumps
+**/*.sql.gz
+**/*.dump
+
+# Migrations can stay (they're part of schema design)
+# !**/migrations/
+
+# ==================== IDE & EDITOR ====================
+**/.vscode/
+**/.idea/
+**/.vs/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ==================== BUILD ARTIFACTS ====================
+**/target/
+**/bin/
+**/obj/
+**/*.egg-info/
+**/.eggs/
+
+# ==================== GIT ====================
+.git/
+**/.gitignore
+
+# ==================== LOGS & TEMP ====================
+**/*.log
+**/logs/
+**/tmp/
+**/temp/
+**/.cache/
+
+# ==================== ENVIRONMENT & SECRETS ====================
+**/.env
+**/.env.local
+**/.env.*.local
+**/secrets/
+**/credentials/
+
+# ==================== DOCUMENTATION ARTIFACTS ====================
+# Keep specs, but ignore generated docs
+**/site/
+**/_build/
+**/docs/_build/
+
+# ==================== HACKATHON SPECIFIC ====================
+# History folder (already documented)
+history/
+
+# Old drafts or backup files
+**/*.bak
+**/*.backup
+**/*~
+
+# Demo recordings (if you record locally)
+**/*.mp4
+**/*.mov
+**/*.avi
+
+# ==================== CLOUDFLARE R2 / ASSETS ====================
+# Don't scan uploaded content
+**/uploads/
+**/media/
+**/static/uploaded/
+
+# ==================== ALLOW CRITICAL FILES ====================
+# Explicitly include important files (override above rules)
+!specs/**/*.md
+!docs/**/*.md
+!README.md
+!.claude/**
+!src/backend/app/**/*.py
+!tests/**/*.py
