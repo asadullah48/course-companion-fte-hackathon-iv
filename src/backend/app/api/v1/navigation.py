@@ -2,6 +2,7 @@
 Navigation API
 Course navigation and structure endpoints
 """
+from __future__ import annotations
 
 from typing import Optional
 
@@ -75,6 +76,11 @@ class ChapterNavigation(BaseModel):
     order: int
     is_locked: bool
     is_completed: bool
+
+
+# Rebuild models with forward references
+CourseStructure.model_rebuild()
+ModuleNavigation.model_rebuild()
 
 
 @router.get("/navigation/context/{chapter_id}", response_model=NavigationContext)

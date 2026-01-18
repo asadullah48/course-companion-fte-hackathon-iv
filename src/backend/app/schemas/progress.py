@@ -136,7 +136,7 @@ class ChapterCompletionResponse(BaseModel):
 class StreakHistoryItem(BaseModel):
     """Single day in streak history."""
 
-    date: date = Field(..., description="Date")
+    activity_date: date = Field(..., description="Date")
     active: bool = Field(..., description="Whether user was active")
     time_spent_minutes: int = Field(..., description="Time spent learning")
 
