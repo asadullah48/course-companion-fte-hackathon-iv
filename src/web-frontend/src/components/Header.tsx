@@ -46,6 +46,15 @@ export const Header = () => {
             <Link href="/quizzes" className="text-gray-700 hover:text-blue-600 font-medium">
               Quizzes
             </Link>
+            <Link href="/skills" className="text-gray-700 hover:text-blue-600 font-medium">
+              Skills
+            </Link>
+            <Link href="/mcp" className="text-gray-700 hover:text-blue-600 font-medium">
+              MCP
+            </Link>
+            <Link href="/integration" className="text-gray-700 hover:text-blue-600 font-medium">
+              Integration
+            </Link>
             {user ? (
               <Link href="/dashboard" className="text-gray-700 hover:text-blue-600 font-medium">
                 Dashboard
