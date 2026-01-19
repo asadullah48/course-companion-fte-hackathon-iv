@@ -195,7 +195,7 @@ class TestConstitutionalCompliance:
         assert compliance.get("deterministic_only") is True
 
     def test_no_llm_imports_in_requirements(self):
-        """Test no LLM packages in requirements.txt (as actual dependencies)."""
+        """Test no LLM packages in requirements.txt (as actual dependencies) - Phase 1 compliance."""
         import os
         import re
 
@@ -204,13 +204,18 @@ class TestConstitutionalCompliance:
             "..", "..", "requirements.txt"
         )
 
-        forbidden_packages = [
+        # Phase 1 forbidden packages (still forbidden)
+        phase1_forbidden_packages = [
             "openai",
-            "anthropic",
             "langchain",
             "llama-index",
             "transformers",
             "sentence-transformers",
+        ]
+
+        # Phase 2 allowed packages
+        phase2_allowed_packages = [
+            "anthropic",  # For Claude Sonnet 4 API access (Phase 2 constitutional amendment)
         ]
 
         with open(requirements_path, "r") as f:
@@ -227,5 +232,14 @@ class TestConstitutionalCompliance:
             match = re.match(r"^([a-zA-Z0-9_-]+)", stripped)
             if match:
                 pkg_name = match.group(1).lower()
-                for forbidden in forbidden_packages:
+                # Check that Phase 1 forbidden packages are not present
+                for forbidden in phase1_forbidden_packages:
                     assert pkg_name != forbidden, f"Forbidden package '{forbidden}' found in requirements.txt"
+
+                # Verify that any allowed Phase 2 packages are properly documented
+                if pkg_name in phase2_allowed_packages:
+                    # Verify that the requirements file has appropriate documentation
+                    with open(requirements_path, "r") as f2:
+                        req_content = f2.read()
+                        assert "Phase 2 Constitutional Amendment" in req_content, \
+                            f"Phase 2 package '{pkg_name}' found without constitutional amendment documentation"

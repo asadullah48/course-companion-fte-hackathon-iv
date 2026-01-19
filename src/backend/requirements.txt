@@ -24,6 +24,9 @@ bcrypt==4.2.0  # Pin to 4.x for passlib compatibility (5.0+ breaks passlib)
 # Caching
 redis==5.0.1
 
+# LLM Integration (Phase 2)
+anthropic>=0.25.0
+
 # Utilities
 python-multipart==0.0.6
 httpx==0.26.0
@@ -41,9 +44,11 @@ ruff==0.1.13
 # ============================================
 # DO NOT ADD:
 # - openai
-# - anthropic
 # - langchain
 # - llama-index
 # - transformers
 # - sentence-transformers
+# ============================================
+# ALLOWED LLM PACKAGE (Phase 2 Constitutional Amendment)
+# - anthropic (for Claude Sonnet 4 API access)
 # ============================================

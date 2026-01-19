@@ -52,6 +52,14 @@ class Settings(BaseSettings):
     # Redis (optional caching)
     redis_url: str | None = None
 
+    # Claude API (Phase 2 - Adaptive Learning)
+    claude_api_key: str = ""
+    claude_timeout_seconds: int = 30
+    claude_max_tokens: int = 1024
+    claude_temperature: float = 0.3
+    claude_retry_attempts: int = 3
+    claude_retry_delay_seconds: int = 1
+
     # JWT Authentication
     jwt_secret_key: str = "change-me-in-production"
     jwt_algorithm: str = "HS256"
