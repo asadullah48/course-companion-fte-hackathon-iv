@@ -161,3 +161,26 @@ class QuizAttemptResponse(BaseModel):
     started_at: datetime = Field(..., description="Start timestamp")
     submitted_at: Optional[datetime] = Field(None, description="Submission timestamp")
     time_spent_seconds: Optional[int] = Field(None, description="Time spent")
+
+
+class QuizListItem(BaseModel):
+    """Quiz summary for listing."""
+
+    quiz_id: str = Field(..., description="Quiz identifier")
+    title: str = Field(..., description="Quiz title")
+    description: Optional[str] = Field(None, description="Quiz description")
+    question_count: int = Field(..., description="Number of questions")
+    passing_score: int = Field(..., description="Passing score percentage")
+    type: Literal["chapter", "module", "practice"] = Field(
+        "chapter", description="Quiz type"
+    )
+    module_id: Optional[str] = Field(None, description="Associated module ID")
+    chapter_id: Optional[str] = Field(None, description="Associated chapter ID")
+    accessible: bool = Field(True, description="Whether user can access this quiz")
+
+
+class QuizListResponse(BaseModel):
+    """Response for quiz listing."""
+
+    quizzes: List[QuizListItem] = Field(..., description="List of quizzes")
+    total_quizzes: int = Field(..., description="Total quiz count")

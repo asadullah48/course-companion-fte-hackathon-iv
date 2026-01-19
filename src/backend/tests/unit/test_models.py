@@ -70,10 +70,6 @@ class TestAchievementCategory:
 class TestAuthFunctions:
     """Tests for authentication functions."""
 
-    @pytest.mark.skipif(
-        True,  # Skip due to bcrypt/passlib version compatibility issue
-        reason="bcrypt 5.0+ has compatibility issues with passlib - needs dependency update"
-    )
     def test_password_hashing(self):
         """Test password hashing and verification."""
         password = "securepassword123"
@@ -83,10 +79,6 @@ class TestAuthFunctions:
         assert verify_password(password, hashed) is True
         assert verify_password("wrongpassword", hashed) is False
 
-    @pytest.mark.skipif(
-        True,  # Skip due to bcrypt/passlib version compatibility issue
-        reason="bcrypt 5.0+ has compatibility issues with passlib - needs dependency update"
-    )
     def test_password_different_hashes(self):
         """Test same password produces different hashes (salted)."""
         password = "samepassword"

@@ -182,23 +182,38 @@ async def get_ai_plugin_manifest():
     ChatGPT App plugin manifest.
 
     Returns:
-        AI plugin manifest for ChatGPT integration
+        AI plugin manifest for ChatGPT integration following OpenAI schema.
     """
+    base_url = settings.api_base_url.rstrip("/")
+
     return {
         "schema_version": "v1",
-        "name_for_human": "Course Companion",
+        "name_for_human": "AI Agent Development Tutor",
         "name_for_model": "course_companion",
-        "description_for_human": "Learn AI Agent Development with an interactive course companion",
-        "description_for_model": "Provides access to an AI Agent Development course. Use this to retrieve course content, track progress, take quizzes, and check achievements. Content is served verbatim - apply your intelligence to explain, summarize, or teach the material.",
+        "description_for_human": (
+            "Your personal tutor for mastering AI Agent development. "
+            "Learn to build autonomous agents using Claude Agent SDK, "
+            "MCP integration, and production deployment patterns."
+        ),
+        "description_for_model": (
+            "This plugin provides access to an AI Agent Development course. "
+            "Use it to retrieve course content, track user progress, administer quizzes, "
+            "and check achievements. Content is served verbatim from storage - apply your "
+            "intelligence as ChatGPT to explain, summarize, teach, and guide the student "
+            "through the material. Available skills: Concept Explainer (explain topics using "
+            "course content), Quiz Master (administer quizzes and provide feedback), "
+            "Socratic Tutor (guide without giving answers), Progress Motivator (encourage "
+            "with progress/streak/achievements)."
+        ),
         "auth": {
             "type": "user_http",
             "authorization_type": "bearer",
         },
         "api": {
             "type": "openapi",
-            "url": f"{settings.cors_origins[0] if settings.cors_origins else 'http://localhost:8000'}/openapi.json",
+            "url": f"{base_url}/openapi.json",
         },
-        "logo_url": f"{settings.cors_origins[0] if settings.cors_origins else 'http://localhost:8000'}/static/logo.png",
+        "logo_url": f"{base_url}/static/logo.png",
         "contact_email": "support@coursecompanion.ai",
         "legal_info_url": "https://coursecompanion.ai/legal",
     }

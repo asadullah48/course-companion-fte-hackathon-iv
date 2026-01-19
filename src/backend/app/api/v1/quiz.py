@@ -27,9 +27,80 @@ from app.schemas.quiz import (
     QuizResultResponse,
     QuestionResult,
     QuizAttemptResponse,
+    QuizListItem,
+    QuizListResponse,
 )
 
 router = APIRouter()
+
+
+@router.get("/quizzes", response_model=QuizListResponse)
+async def list_quizzes(
+    module_id: Optional[str] = Query(None, description="Filter by module ID"),
+    user: ActiveUser = None,
+    db: DbSession = None,
+):
+    """
+    List available quizzes.
+
+    CONSTITUTIONAL COMPLIANCE:
+    - ✅ Simple database query (deterministic)
+    - ✅ Access control based on subscription tier
+    - ❌ NO LLM filtering or recommendations
+
+    Args:
+        module_id: Optional filter by module
+
+    Returns:
+        QuizListResponse with list of quizzes
+    """
+    # Build query
+    query = select(Quiz).options(selectinload(Quiz.module))
+
+    # Apply filters
+    if module_id:
+        if module_id.isdigit():
+            query = query.join(Module).where(Module.order == int(module_id))
+        else:
+            query = query.join(Module).where(Module.module_id == module_id)
+
+    # Execute query
+    result = await db.execute(query.order_by(Quiz.created_at))
+    quizzes = result.scalars().all()
+
+    # Build response with access info
+    quiz_items = []
+    for quiz in quizzes:
+        # Check if user can access this quiz
+        accessible = True
+        if quiz.module:
+            accessible = quiz.module.is_accessible_by(user.tier)
+
+        # Determine quiz type from quiz_id pattern
+        quiz_type = "module"  # Default for module quizzes
+        if "chapter" in quiz.quiz_id.lower() or "ch" in quiz.quiz_id.lower():
+            quiz_type = "chapter"
+        elif "practice" in quiz.quiz_id.lower():
+            quiz_type = "practice"
+
+        quiz_items.append(
+            QuizListItem(
+                quiz_id=quiz.quiz_id,
+                title=quiz.title,
+                description=quiz.description,
+                question_count=quiz.question_count,
+                passing_score=quiz.passing_score,
+                type=quiz_type,
+                module_id=quiz.module.module_id if quiz.module else None,
+                chapter_id=None,  # Not tracked in current model
+                accessible=accessible,
+            )
+        )
+
+    return QuizListResponse(
+        quizzes=quiz_items,
+        total_quizzes=len(quiz_items),
+    )
 
 
 @router.get("/quizzes/{quiz_id}", response_model=QuizResponse)

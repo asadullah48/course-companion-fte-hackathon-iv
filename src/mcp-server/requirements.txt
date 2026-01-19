@@ -1,0 +1,11 @@
+# MCP Server for Course Companion
+# Provides Claude Desktop/Code integration
+
+# MCP SDK
+mcp>=1.0.0
+
+# HTTP client for backend API
+httpx>=0.26.0
+
+# Utilities
+python-dotenv>=1.0.0

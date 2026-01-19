@@ -1,4 +1,5 @@
 {
+  "_comment": "This is a reference file. The authoritative manifest is served dynamically at /.well-known/ai-plugin.json",
   "schema_version": "v1",
   "name_for_human": "AI Agent Development Tutor",
   "name_for_model": "course_companion",
@@ -10,9 +11,9 @@
   },
   "api": {
     "type": "openapi",
-    "url": "https://api.coursecompanion.dev/openapi.json"
+    "url": "{API_BASE_URL}/openapi.json"
   },
-  "logo_url": "https://api.coursecompanion.dev/static/logo.png",
+  "logo_url": "{API_BASE_URL}/static/logo.png",
   "contact_email": "support@coursecompanion.ai",
   "legal_info_url": "https://coursecompanion.ai/legal"
 }

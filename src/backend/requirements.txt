@@ -19,6 +19,7 @@ aioboto3==12.3.0
 # Authentication
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
+bcrypt==4.2.0  # Pin to 4.x for passlib compatibility (5.0+ breaks passlib)
 
 # Caching
 redis==5.0.1

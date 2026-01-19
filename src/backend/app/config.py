@@ -60,6 +60,9 @@ class Settings(BaseSettings):
     # CORS
     cors_origins: List[str] = ["http://localhost:3000", "https://chat.openai.com"]
 
+    # API Base URL (for ChatGPT manifest)
+    api_base_url: str = "http://localhost:8000"
+
     # Rate Limiting
     rate_limit_requests: int = 100
     rate_limit_window: int = 60  # seconds
