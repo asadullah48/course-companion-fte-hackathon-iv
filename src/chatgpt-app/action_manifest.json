@@ -1,0 +1,915 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Course Companion API",
+    "description": "API for AI Agent Development course content, quizzes, and progress tracking",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.coursecompanion.dev/api/v1",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/chapters/{chapter_id}": {
+      "get": {
+        "operationId": "getChapterContent",
+        "summary": "Get chapter content verbatim",
+        "description": "Retrieves the full content of a specific chapter for explanation purposes",
+        "parameters": [
+          {
+            "name": "chapter_id",
+            "in": "path",
+            "required": true,
+            "description": "Unique chapter identifier (e.g., ch1-intro-to-agents)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "description": "Response format",
+            "schema": {
+              "type": "string",
+              "enum": ["markdown", "json"],
+              "default": "markdown"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chapter content retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChapterContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Chapter not found"
+          },
+          "403": {
+            "description": "Access denied (premium content)"
+          }
+        }
+      }
+    },
+    "/chapters": {
+      "get": {
+        "operationId": "listChapters",
+        "summary": "List all chapters",
+        "description": "Get list of all chapters with metadata and completion status",
+        "parameters": [
+          {
+            "name": "module",
+            "in": "query",
+            "required": false,
+            "description": "Filter by module number",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "include_locked",
+            "in": "query",
+            "required": false,
+            "description": "Include locked premium chapters",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chapter list retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChapterList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/modules/{module_id}": {
+      "get": {
+        "operationId": "getModuleOverview",
+        "summary": "Get module overview",
+        "description": "Retrieves module metadata and chapter list",
+        "parameters": [
+          {
+            "name": "module_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Module retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModuleOverview"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chapters/{chapter_id}/next": {
+      "get": {
+        "operationId": "getNextChapter",
+        "summary": "Get next chapter",
+        "description": "Returns the next chapter in sequence based on completion status",
+        "parameters": [
+          {
+            "name": "chapter_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Next chapter information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NavigationResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/navigation/sequence": {
+      "get": {
+        "operationId": "getFullSequence",
+        "summary": "Get full chapter sequence",
+        "description": "Returns the complete ordered list of chapters with progress",
+        "responses": {
+          "200": {
+            "description": "Full sequence retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChapterSequence"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/navigation/recommend": {
+      "get": {
+        "operationId": "getRecommendedAction",
+        "summary": "Get recommended next action",
+        "description": "Suggests what the user should do next based on progress",
+        "responses": {
+          "200": {
+            "description": "Recommendation retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recommendation"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/quizzes": {
+      "get": {
+        "operationId": "listQuizzes",
+        "summary": "List available quizzes",
+        "description": "Get list of quizzes filtered by chapter or module",
+        "parameters": [
+          {
+            "name": "chapter_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "module_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["chapter", "module", "practice"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Quiz list retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuizList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/quizzes/{quiz_id}": {
+      "get": {
+        "operationId": "getQuizQuestions",
+        "summary": "Get quiz questions",
+        "description": "Retrieves quiz questions WITHOUT correct answers",
+        "parameters": [
+          {
+            "name": "quiz_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "shuffle",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Quiz retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Quiz"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Attempt limit reached"
+          }
+        }
+      }
+    },
+    "/quizzes/{quiz_id}/submit": {
+      "post": {
+        "operationId": "submitQuizAnswers",
+        "summary": "Submit quiz answers",
+        "description": "Submit answers for grading and receive score",
+        "parameters": [
+          {
+            "name": "quiz_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuizSubmission"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Quiz graded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuizResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/quizzes/{quiz_id}/results/{attempt_id}": {
+      "get": {
+        "operationId": "getQuizResults",
+        "summary": "Get quiz results",
+        "description": "Retrieve detailed results for a specific quiz attempt",
+        "parameters": [
+          {
+            "name": "quiz_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "attempt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Results retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuizResultDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/progress/{user_id}": {
+      "get": {
+        "operationId": "getUserProgress",
+        "summary": "Get user progress",
+        "description": "Retrieve overall progress across all modules and chapters",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "include_chapters",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Progress retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProgress"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/progress/{user_id}/chapters/{chapter_id}": {
+      "put": {
+        "operationId": "markChapterComplete",
+        "summary": "Mark chapter complete",
+        "description": "Mark a chapter as completed after quiz passed or content consumed",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "chapter_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChapterCompletion"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Chapter marked complete",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompletionResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/progress/{user_id}/streak": {
+      "get": {
+        "operationId": "getUserStreak",
+        "summary": "Get learning streak",
+        "description": "Get current streak and streak history",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "history_days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 30
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Streak data retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreakData"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/progress/{user_id}/achievements": {
+      "get": {
+        "operationId": "getUserAchievements",
+        "summary": "Get achievements",
+        "description": "List all achievements (earned and locked)",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["all", "earned", "locked"],
+              "default": "all"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Achievements retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AchievementList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/progress/{user_id}/time": {
+      "post": {
+        "operationId": "logLearningTime",
+        "summary": "Log learning time",
+        "description": "Log time spent learning for streak and analytics",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TimeLog"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Time logged",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimeLogResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ChapterContent": {
+        "type": "object",
+        "properties": {
+          "chapter_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "content_type": {
+            "type": "string"
+          },
+          "word_count": {
+            "type": "integer"
+          },
+          "estimated_read_time": {
+            "type": "integer"
+          },
+          "metadata": {
+            "type": "object"
+          }
+        }
+      },
+      "ChapterList": {
+        "type": "object",
+        "properties": {
+          "chapters": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "total_chapters": {
+            "type": "integer"
+          },
+          "completed_count": {
+            "type": "integer"
+          }
+        }
+      },
+      "ModuleOverview": {
+        "type": "object",
+        "properties": {
+          "module_id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "chapters": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "NavigationResult": {
+        "type": "object",
+        "properties": {
+          "next": {
+            "type": "string",
+            "nullable": true
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      },
+      "ChapterSequence": {
+        "type": "object",
+        "properties": {
+          "sequence": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "current_position": {
+            "type": "integer"
+          }
+        }
+      },
+      "Recommendation": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string"
+          },
+          "chapter_id": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      },
+      "QuizList": {
+        "type": "object",
+        "properties": {
+          "quizzes": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "total_quizzes": {
+            "type": "integer"
+          }
+        }
+      },
+      "Quiz": {
+        "type": "object",
+        "properties": {
+          "quiz_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "attempt_id": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string"
+          }
+        }
+      },
+      "QuizSubmission": {
+        "type": "object",
+        "required": ["attempt_id", "answers"],
+        "properties": {
+          "attempt_id": {
+            "type": "string"
+          },
+          "answers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "question_id": {
+                  "type": "string"
+                },
+                "answer": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "QuizResult": {
+        "type": "object",
+        "properties": {
+          "quiz_id": {
+            "type": "string"
+          },
+          "score": {
+            "type": "integer"
+          },
+          "total_points": {
+            "type": "integer"
+          },
+          "passed": {
+            "type": "boolean"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "QuizResultDetail": {
+        "type": "object",
+        "properties": {
+          "quiz_id": {
+            "type": "string"
+          },
+          "attempt_id": {
+            "type": "string"
+          },
+          "score": {
+            "type": "integer"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "UserProgress": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "overall": {
+            "type": "object"
+          },
+          "modules": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "chapters": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "ChapterCompletion": {
+        "type": "object",
+        "required": ["completion_type", "time_spent_minutes"],
+        "properties": {
+          "completion_type": {
+            "type": "string"
+          },
+          "quiz_attempt_id": {
+            "type": "string"
+          },
+          "time_spent_minutes": {
+            "type": "integer"
+          }
+        }
+      },
+      "CompletionResult": {
+        "type": "object",
+        "properties": {
+          "chapter_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "achievements_unlocked": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "StreakData": {
+        "type": "object",
+        "properties": {
+          "current_streak": {
+            "type": "integer"
+          },
+          "longest_streak": {
+            "type": "integer"
+          },
+          "streak_at_risk": {
+            "type": "boolean"
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "AchievementList": {
+        "type": "object",
+        "properties": {
+          "achievements": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "earned_count": {
+            "type": "integer"
+          },
+          "points_earned": {
+            "type": "integer"
+          }
+        }
+      },
+      "TimeLog": {
+        "type": "object",
+        "required": ["chapter_id", "duration_minutes", "activity_type"],
+        "properties": {
+          "chapter_id": {
+            "type": "string"
+          },
+          "duration_minutes": {
+            "type": "integer"
+          },
+          "activity_type": {
+            "type": "string"
+          }
+        }
+      },
+      "TimeLogResult": {
+        "type": "object",
+        "properties": {
+          "logged": {
+            "type": "boolean"
+          },
+          "today_total_minutes": {
+            "type": "integer"
+          },
+          "streak_maintained": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "oauth2": {
+        "type": "oauth2",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://api.coursecompanion.dev/oauth/authorize",
+            "tokenUrl": "https://api.coursecompanion.dev/oauth/token",
+            "scopes": {
+              "read:content": "Read course content",
+              "read:progress": "Read user progress",
+              "write:progress": "Update user progress"
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "oauth2": ["read:content", "read:progress", "write:progress"]
+    }
+  ]
+}
