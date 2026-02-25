@@ -93,7 +93,7 @@ export default function MCPPage() {
   };
 
   const handleArgChange = (key: string, value: any) => {
-    setToolArgs(prev => ({
+    setToolArgs((prev: any) => ({
       ...prev,
       [key]: value
     }));

@@ -1,6 +1,6 @@
 // src/app/api/v3/mcp/route.ts
 import { NextRequest } from 'next/server';
-import { getAuth } from '@/lib/auth';
+import { getAuth } from '@/lib/auth-server';
 
 export async function POST(request: NextRequest) {
   const auth = await getAuth();
