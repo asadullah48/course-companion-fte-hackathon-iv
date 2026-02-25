@@ -1,43 +1,18 @@
 services:
-  # Backend API Service
+  # Backend API Service - Local Content Mode
   - type: web
     name: course-companion-api
     env: python
     region: oregon
-    plan: starter
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    rootDir: src/backend
+    buildCommand: pip install -r requirements-local.txt
+    startCommand: uvicorn local_main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
       - key: APP_ENV
         value: production
-      - key: DEBUG
-        value: false
-      - key: SECRET_KEY
-        generateValue: true
-      - key: JWT_SECRET_KEY
-        generateValue: true
-      - key: CONTENT_STORAGE_MODE
-        value: local
       - key: CONTENT_DIR
-        value: /opt/render/project/src/sample-content
-      - key: CORS_ORIGINS
-        sync: false
-      - key: DATABASE_URL
-        fromDatabase:
-          name: course-companion-db
-          property: connectionString
-
-  # PostgreSQL Database
-  - type: pserv
-    name: course-companion-db
-    databaseName: course_companion
-    plan: starter
-    region: oregon
-
-databases:
-  - name: course-companion-db
-    databaseName: course_companion
-    plan: starter
+        value: /opt/render/project/src/src/backend/sample-content
